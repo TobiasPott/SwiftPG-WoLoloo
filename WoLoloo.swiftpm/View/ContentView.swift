@@ -1,39 +1,19 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State var target: WoLolooTarget = WoLolooTarget()
-    @State var session: WoLolooSession = WoLolooSession()
+    @Binding var target: WoLolooTarget
+    @Binding var session: WoLolooSession
+    var fromShortcutItem: Bool = false
     
     var body: some View {
         NavigationStack(root: {
             VStack() {
-                if session.reduced {
-                    GroupBox(content: {
-                        HStack(spacing: 16) {
-                            Button(action: { withAnimation { session.reduced.toggle() } }, label: {
-                                Image(systemName: "widget.extralarge")
-                            })
-                            Spacer(minLength: 0)
-                            BookmarksLink(target: $target, session: $session, reduced: true)
-                            Spacer(minLength: 0)
-                            GettingStartedLink(reduced: true)
-                            Spacer(minLength: 0)
-                            WoLolooAudioControls(target: $session.audio)
-                        }.frame(maxWidth: .infinity, maxHeight: 16)
-                    }).frame(minHeight: 32)
-                } else { 
-                    HStack() {
-                        GroupBox(content: {
-                            
-                            Button(action: { withAnimation { session.reduced.toggle() } }, label: {
-                                Image(systemName: "widget.small")
-                            }).frame(maxHeight: 16)
-                        })
-                        Spacer()
-                    }.frame(maxWidth: .infinity)
-                }
+                SessionAppToolbar(target: $target, session: $session)
                 GroupBox(content: {
                     WoLoloTargetControl(target: $target, isBookmarked: !session.isBookmarked(target))
+                })
+                GroupBox(content: {
+                    ShortCutView(target: target, session: $session)
                 })
                 GroupBox(content: {
                     Grid {
@@ -68,8 +48,6 @@ struct ContentView: View {
         .padding(.horizontal)
         .font(.system(size: 14, weight: .regular, design: .monospaced))
         .frame(maxWidth: 440)
-        .onAppear(perform: {
-            session.loadBookmarks()
-        })
+        
     }
 }

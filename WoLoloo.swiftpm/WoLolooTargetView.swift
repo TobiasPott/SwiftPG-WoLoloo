@@ -16,7 +16,7 @@ struct WoLoloTargetView: View {
                 Group {
                     GridRow(alignment: .center, content: {
                         GridLabelShort(title: "Broadcast")
-                        HStack { Text("\(target.multicastAddr)") }
+                        HStack { Text("\(target.addr)") }
                     }).padding(.bottom, bottomPad)
                     GridRow(alignment: .center, content: {
                         GridLabelShort(title: "MAC")

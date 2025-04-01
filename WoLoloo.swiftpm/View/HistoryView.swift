@@ -10,7 +10,7 @@ struct HistoryView: View {
                 GroupBox(content: {
                     List{
                         ForEach($session.history) { $item in 
-                            Text("\(item.target.mac) (\(item.target.multicastAddr)")
+                            Text("\(item.target.mac) (\(item.target.addr)")
                         }
                     }.listStyle(.plain)
 //                        .frame(maxHeight: 240).padding(.horizontal, -16)
