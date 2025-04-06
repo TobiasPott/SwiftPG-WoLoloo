@@ -57,7 +57,7 @@ struct WoLolooSession {
     }
     mutating func bookmark(_ target: WoLolooTarget) {  
         if isBookmarked(target) {
-            // print("Already bookmarked")
+            print("Already bookmarked")
             self.bookmarks.removeAll { bm in bm.id == target.id }
         }
         var newBookmark = target
@@ -65,5 +65,7 @@ struct WoLolooSession {
         self.bookmarks.append(newBookmark)
         self.storeBookmarksAndShortcuts()
         self.isFromShortcut = false
+//        print(target)
+//        print(newBookmark)
     }
 }

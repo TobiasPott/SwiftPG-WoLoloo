@@ -13,7 +13,13 @@ struct ContentView: View {
                     if session.isFromShortcut {
                         Text("Loaded Shortcut").foregroundStyle(Color.accentColor)
                     }
+                    // ToDo: Consider changing target to reference type
+                    //    saving/updating into the list is a struggle
+                    //        possibly use the id of the target and a direct access to the bookmarks list?! (as a bound variable)
                     WoLoloTargetControl(target: $target, isBookmarked: !session.isBookmarked(target))
+//                        .onChange(of: target, {
+//                            print(target)  
+//                        })
                 })
                 GroupBox(content: {
                     ShortCutView(target: target, session: $session)                                .disabled(!isValid)

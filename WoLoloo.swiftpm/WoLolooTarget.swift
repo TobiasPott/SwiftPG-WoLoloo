@@ -2,11 +2,15 @@ import SwiftUI
 
 struct WoLolooTarget: Identifiable, Codable, Equatable {
     static func ==(lhs: WoLolooTarget, rhs: WoLolooTarget) -> Bool {
-        return (lhs.name == rhs.name && lhs.addr == rhs.addr
-                && lhs.mac == rhs.mac && lhs.port == rhs.port) // || lhs.id == rhs.id
+        return lhs.id == rhs.id && lhs.name == rhs.name && lhs.addr == rhs.addr && lhs.mac == rhs.mac && lhs.port == rhs.port
     }
+//    static func ==(lhs: WoLolooTarget, rhs: WoLolooTarget) -> Bool {
+//        return (lhs.name == rhs.name && lhs.addr == rhs.addr
+//                && lhs.mac == rhs.mac && lhs.port == rhs.port) // || lhs.id == rhs.id
+//    }
     
     public var id: UUID = UUID()
+    //    public var id: String? { get { return name } set { name = newValue ?? "Unnamed Device" } }
     var name: String = "YourDevice #1"
     var addr: String = "" //"192.168.178.*"
     var mac: String = "" // "58:47:ca:7b:aa:5a"

@@ -51,24 +51,19 @@ struct BookmarksView: View {
                         target = bm
                         dismiss()
                     }, label: { 
-                        WoLoloTargetView(target: bm, isBookmarked: true).padding(.horizontal, -16)
-                        .contextMenu {
-                            Button("Duplicate") {
-                                target = bm.duplicate()
-                                session.bookmark(target)
+                        WoLoloTargetView(target: bm, isBookmarked: true)
+                            .padding(.horizontal, -16)
+//                            .padding(.vertical, -8)
+                            .contextMenu {
+                                BookmarkContextMenu(bookmark: bm, target: $target, session: $session)
                             }
-                            // ToDo: Consider adding 'shortcut' options to the context menu to allow assigning devices as such in bookmarks (requires validation)
-                            Button("Validate") {
-//                                target = bm.duplicate()
-//                                session.bookmark(target)
-                            }
-                        }
                     })
                 }.onDelete(perform: { indexSet in 
                     session.bookmarks.remove(atOffsets: indexSet)
                     // store changed session to UserDefaults
                     session.storeBookmarksAndShortcuts()
                 })
+                
             }
             .listStyle(.inset)
             .padding(.horizontal, -15)
@@ -78,3 +73,5 @@ struct BookmarksView: View {
         Spacer()
     }
 }
+
+
