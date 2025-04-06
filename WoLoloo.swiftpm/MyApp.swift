@@ -76,6 +76,8 @@ struct MyApp: App {
         if let scItem = session.shortcutItem(3) { shortcutItems.append(scItem) }
         if shortcutItems.count > 0 {
             UIApplication.shared.shortcutItems = shortcutItems
+        } else {
+            UIApplication.shared.shortcutItems = []
         }
     }
 }

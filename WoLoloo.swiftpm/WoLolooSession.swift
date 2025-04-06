@@ -24,19 +24,21 @@ struct WoLolooSession {
     
     static let scItemType: String = "WoLoloo_DeviceTargetShortcut"
     func shortcutItem(_ idx: Int) -> UIApplicationShortcutItem? {
-        if idx >= 0 && idx < scTargets.count, let target = scTargets[idx] { 
-            let scItem = UIMutableApplicationShortcutItem(type: WoLolooSession.scItemType, localizedTitle: "Empty")
-            scItem.type = WoLolooSession.scItemType // (REQUIRED)
-            scItem.localizedTitle = "Wake up '\(target.name)'" // (REQUIRED
-            scItem.icon = UIApplicationShortcutIcon(type: .bookmark) // icon of shortcut
-            var calluserInfo: [String: NSSecureCoding] {
-                return ["name" : "\(target.name)" as NSSecureCoding,
-                        "addr": "\(target.addr)" as NSSecureCoding, 
-                        "mac": "\(target.mac)" as NSSecureCoding, 
-                        "port": "\(target.port)" as NSSecureCoding]
-            }
-            scItem.userInfo = calluserInfo
-            return scItem
+        if idx >= 0 && idx < scTargets.count {
+            if let target = scTargets[idx] { 
+                let scItem = UIMutableApplicationShortcutItem(type: WoLolooSession.scItemType, localizedTitle: "Empty")
+                scItem.type = WoLolooSession.scItemType // (REQUIRED)
+                scItem.localizedTitle = "Wake up '\(target.name)'" // (REQUIRED
+                scItem.icon = UIApplicationShortcutIcon(type: .bookmark) // icon of shortcut
+                var calluserInfo: [String: NSSecureCoding] {
+                    return ["name" : "\(target.name)" as NSSecureCoding,
+                            "addr": "\(target.addr)" as NSSecureCoding, 
+                            "mac": "\(target.mac)" as NSSecureCoding, 
+                            "port": "\(target.port)" as NSSecureCoding]
+                }
+                scItem.userInfo = calluserInfo
+                return scItem
+            } 
         }
         return nil
     }

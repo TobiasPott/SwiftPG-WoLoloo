@@ -19,12 +19,12 @@ extension WoLolooTarget {
     var isValidAddr: Bool {
         if addr.isEmpty { return false }
         if addr.count <= 2 { return false }
-        return false
+        return true
     }
     var isValidMac: Bool {
         if mac.isEmpty { return false }
         if mac.count <= 12 { return false }
-        return false
+        return true
     }
     
 }
