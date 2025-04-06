@@ -47,27 +47,25 @@ struct WoLolooAudio {
 struct WoLolooAudioControls: View {
     @Binding var target: WoLolooAudio
     
+    var volumeDelta: Float = 0.05
+    
     var body: some View {
         let vol = target.getVolume()
         let muted = target.getIsMuted()
         
         HStack {
             Group {
-                Button(action: { target.setVolume(vol - 0.05) }, 
-                       label: { Image(systemName: "speaker.minus.fill") })
+                Button(action: { target.setVolume(vol - volumeDelta) }, 
+                       label: { Image(systemName: "speaker.minus.fill")                    .resizable().aspectRatio(contentMode: .fit)
+                })
                 Button(action: {
                     target.setIsMuted(!muted) 
-                }, 
-                       label: {
-                    if target.getIsMuted() { Image(systemName: "speaker.slash") }
-                    else if vol >= 0.75 { Image(systemName: "speaker.wave.3") }
-                    else if vol >= 0.5 { Image(systemName: "speaker.wave.2") }
-                    else if vol >= 0.25 { Image(systemName: "speaker.wave.1") }
-                    else if vol > 0.0 { Image(systemName: "speaker") }
-                    else { Image(systemName: "speaker.slash") }
+                }, label: {
+                    Image(systemName: getVolumeImageName())
+                        .resizable().aspectRatio(contentMode: .fit)
                 })
-                Button(action: { target.setVolume(vol + 0.05) }, 
-                       label: { Image(systemName: "speaker.plus.fill") })
+                Button(action: { target.setVolume(vol + volumeDelta) }, 
+                       label: { Image(systemName: "speaker.plus.fill").resizable().aspectRatio(contentMode: .fit) })
                 
             }
             .frame(width: 24)
@@ -75,6 +73,20 @@ struct WoLolooAudioControls: View {
         }
         
     }
+    
+    func getVolumeImageName() -> String {
+        let vol = target.getVolume()
+        let muted = target.getIsMuted()
+        
+        var volSpeakerImage: String = "speaker.slash"
+        if muted { volSpeakerImage = "speaker.slash" }
+        else if vol >= 0.75 { volSpeakerImage = "speaker.wave.3" }
+        else if vol >= 0.5 { volSpeakerImage =  "speaker.wave.2" }
+        else if vol >= 0.25 { volSpeakerImage =  "speaker.wave.1" }
+        else if vol > 0.0 { volSpeakerImage =  "speaker" }
+        return volSpeakerImage
+    }
+    
 }
 struct WoLolooAudioView: View {
     @Binding var target: WoLolooAudio

@@ -3,27 +3,28 @@ import SwiftUI
 struct ContentView: View {
     @Binding var target: WoLolooTarget
     @Binding var session: WoLolooSession
-    var fromShortcutItem: Bool = false
     
     var body: some View {
         NavigationStack(root: {
             VStack() {
+                let isValid = target.isValid
                 SessionAppToolbar(target: $target, session: $session)
                 GroupBox(content: {
+                    if session.isFromShortcut {
+                        Text("Loaded Shortcut").foregroundStyle(Color.accentColor)
+                    }
                     WoLoloTargetControl(target: $target, isBookmarked: !session.isBookmarked(target))
                 })
                 GroupBox(content: {
-                    ShortCutView(target: target, session: $session)
+                    ShortCutView(target: target, session: $session)                                .disabled(!isValid)
                 })
                 GroupBox(content: {
                     Grid {
-                        let isValid = target.isValid
                         GridRow(alignment: .center, content: {
-                            Button("New") { target = WoLolooTarget() }
                             Button("Save") { session.bookmark(target) }
                             Button("WoLoloo") { session.wololoo(target) }
+                                .disabled(!isValid)
                         })       
-                        .disabled(!isValid)
                         .frame(maxWidth: .infinity)
                     }                
                 })

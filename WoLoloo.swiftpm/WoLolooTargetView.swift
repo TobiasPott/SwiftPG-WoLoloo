@@ -1,39 +1,73 @@
 import SwiftUI
 
-struct WoLoloTargetView: View {
-    let target: WoLolooTarget
+struct WoLoloTargetControl: View {
+    // ToDo: Consider consolidation of trget control and view with an 'edit' flag (or overload init where binding makes it edit and not binding makes it view (would be cool to check)
+    @Binding var target: WoLolooTarget
+    let isBookmarked: Bool
     
     var body: some View {
-        let bottomPad: CGFloat = 2
-        
+        // Editable target view
+        Grid {
+            PropertyGridRow(title: "Name", content: {
+                TextField("Descriptive Name", text: $target.name).foregroundStyle(Color.accentColor)
+                Image(systemName: isBookmarked ? "bookmark" : "bookmark.fill").foregroundStyle(Color.accentColor)
+            })
+            PropertyGridRow(title: "Broadcast", content: {
+                TextField("Broadcast IP/Host Name", text: $target.addr)
+                ImageIf(set: !target.isValidAddr)
+            })
+            PropertyGridRow(title: "MAC", content: {
+                TextField("Wake-On-Lan MAC Address", text: $target.mac)
+                    .onChange(of: target.mac, {
+                        target.mac = target.mac.replacingOccurrences(of: "-", with: ":")
+                    })
+                ImageIf(set: !target.isValidMac)
+            })
+            // ToDo: check bug in changing port value (resets to default of 9)
+            PropertyGridRow(title: "Port", content: {
+                TextField("Port (default = 9)", value: $target.port, formatter: NumberFormatter())
+                ImageIf(set: target.port != 9, image: "exclamationmark.circle")
+            })
+            
+            PropertyGridRow(title: "Created", content: {
+                let createdAtStr = target.createdAt.formatted(date: .abbreviated, time: .shortened)
+                Text(createdAtStr)
+                    .frame(maxWidth: .infinity, alignment: .topLeading)
+            })
+        }
+    }    
+}
+
+
+struct WoLoloTargetView: View {
+    let target: WoLolooTarget    
+    let isBookmarked: Bool
+    
+    var body: some View {
+        // View-only target view
         GroupBox(content: {
             Grid {
-                GridRow(alignment: .center, content: {
-                    GridLabelShort(title: "Name")
-                    HStack { Text("\(target.name)"); Spacer(minLength: 0) }
-                    Image(systemName: "bookmark.fill")
-                }).padding(.bottom, bottomPad)
+                PropertyGridRow(title: "Name", content: {
+                    Text("\(target.name)").foregroundStyle(Color.accentColor)
+                    Image(systemName: isBookmarked ? "bookmark" : "bookmark.fill").foregroundStyle(Color.accentColor)
+                }, short: true)
                 Group {
-                    GridRow(alignment: .center, content: {
-                        GridLabelShort(title: "Broadcast")
-                        HStack { Text("\(target.addr)") }
-                    }).padding(.bottom, bottomPad)
-                    GridRow(alignment: .center, content: {
-                        GridLabelShort(title: "MAC")
-                        HStack { Text("\(target.mac)") }
-                    }).padding(.bottom, bottomPad)
-                    GridRow(alignment: .center, content: {
-                        GridLabelShort(title: "Port")
-                        HStack { Text("\(target.port)") }
-                    }).padding(.bottom, bottomPad)
-                    
-                    GridRow(alignment: .firstTextBaseline, content: {
-                        GridLabelShort(title: "Created")
-                        HStack {
-                            Text(target.createdAt.formatted(date: .abbreviated, time: .shortened))
-                            //                                .frame(height: 34)
-                                .frame(alignment: .topLeading)
-                        }
+                    PropertyGridRow(title: "Broadcast", content: {
+                        Text("\(target.addr)")
+                        ImageIf(set: !target.isValidAddr)
+                    })
+                    PropertyGridRow(title: "MAC", content: {
+                        Text("\(target.mac)")
+                        ImageIf(set: !target.isValidMac)
+                    })
+                    PropertyGridRow(title: "Port", content: {
+                        Text("\(target.port)") 
+                        ImageIf(set: target.port != 9)
+                    })
+                    PropertyGridRow(title: "Created", content: {
+                        let createdAtStr = target.createdAt.formatted(date: .abbreviated, time: .shortened)
+                        Text(createdAtStr)
+                            .frame(maxWidth: .infinity, alignment: .topLeading)
                     })
                 }.gridColumnAlignment(.leading)
                     .font(.system(size: 10, weight: .regular, design: .monospaced))

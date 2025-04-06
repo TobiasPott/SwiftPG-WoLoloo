@@ -15,7 +15,7 @@ struct ShortCutTargetButton: View {
                action: {
             if isSC { session.scTargets[idx] = nil } 
             else { session.scTargets[idx] = target } 
-            session.storeBookmarks()
+            session.storeBookmarksAndShortcuts()
         })
     }
 }

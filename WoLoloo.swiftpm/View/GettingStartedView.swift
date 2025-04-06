@@ -8,7 +8,11 @@ struct GettingStartedLink: View {
         if reduced {
             NavigationLink(destination: {
                 GettingStartedView(scrollTarget: scrollTarget)                
-            }, label: { Image(systemName: "questionmark.circle") })
+            }, label: {
+                Image(systemName: "questionmark.circle")
+                    .resizable().aspectRatio(contentMode: .fit)
+                    .frame(width: 18, height: 18)
+            })
         } else {
             GroupBox(content: {
                 NavigationLink(destination: {

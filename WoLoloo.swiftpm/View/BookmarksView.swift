@@ -9,7 +9,15 @@ struct BookmarksLink: View {
         if reduced {
             NavigationLink(destination: {
                 BookmarksView(target: $target, session: $session)                
-            }, label: { Image(systemName: "bookmark") })
+            }, label: {
+                Image(systemName: "list.bullet.rectangle")
+                    .resizable().aspectRatio(contentMode: .fit)
+                    .frame(width: 23)
+                    .overlay(content: {
+                        Image(systemName: "bookmark.fill")
+                            .offset(CGSize(width: 10.0, height: 6.0))
+                    })
+            })
         } else {
             GroupBox(content: {
                 NavigationLink(destination: {
@@ -29,24 +37,41 @@ struct BookmarksView: View {
     
     var body: some View {
         GroupBox(content: {
-            Text("Select a bookmark").frame(maxWidth: .infinity, alignment: .leading)
+            HStack {
+                
+                Button("Create Device Target") {
+                    target = WoLolooTarget()
+                    session.bookmark(target)
+                }
+            }.frame(maxWidth: .infinity, alignment: .leading)
             List{
                 ForEach($session.bookmarks) { $bm in
-                    
-                    Button(action: { 
+                    Button(action: {
+                        session.isFromShortcut = false
                         target = bm
                         dismiss()
                     }, label: { 
-                        WoLoloTargetView(target: bm).padding(.horizontal, -16) 
+                        WoLoloTargetView(target: bm, isBookmarked: true).padding(.horizontal, -16)
+                        .contextMenu {
+                            Button("Duplicate") {
+                                target = bm.duplicate()
+                                session.bookmark(target)
+                            }
+                            // ToDo: Consider adding 'shortcut' options to the context menu to allow assigning devices as such in bookmarks (requires validation)
+                            Button("Validate") {
+//                                target = bm.duplicate()
+//                                session.bookmark(target)
+                            }
+                        }
                     })
                 }.onDelete(perform: { indexSet in 
                     session.bookmarks.remove(atOffsets: indexSet)
                     // store changed session to UserDefaults
-                    session.storeBookmarks()
+                    session.storeBookmarksAndShortcuts()
                 })
             }
             .listStyle(.inset)
-            .padding(.horizontal, -16)
+            .padding(.horizontal, -15)
         })
         .navigationTitle("Bookmarks")
         .font(.system(size: 14, weight: .regular, design: .monospaced))
