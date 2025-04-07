@@ -7,24 +7,31 @@ struct MyApp: App {
     
     @State var target: WoLolooTarget = WoLolooTarget()
     @State var session: WoLolooSession = WoLolooSession()
+    @State var hideSplashScreen = Persist.getBool(key: .splashscreen, false)
     
     var body: some Scene {
         WindowGroup {
-            ContentView(target: $target, session: $session)
+            ContentView(target: $target, session: $session, hideSplashScreen: $hideSplashScreen)
                 .onAppear(perform: {
                     session.loadBookmarksAndShortcuts()
+                    let lastVersion = Persist.getString(key: .version, "0.x")
+                    if let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String {
+                        if lastVersion != appVersion {
+                            Persist.writeBool(key: .splashscreen, value: false)
+                            hideSplashScreen = false
+                        }
+                    }
                 })
+                .frame(maxWidth: 440)    
         }.onChange(of: scenePhase) { _, newPhase in
             onScenePhaseChanged(newPhase)
         }
     }
     
-    func onScenePhaseChanged(_ newPhase: ScenePhase) {
+    private func onScenePhaseChanged(_ newPhase: ScenePhase) {
         switch newPhase {
-        case .background: addQuickActions()
-            break;
-        case .inactive:
-            break
+        case .background: addQuickActions(); break
+        case .inactive: break
         case .active:
             session.loadBookmarksAndShortcuts()
             guard let userInfo = shortcutItemToProcess?.userInfo! else {
@@ -34,12 +41,11 @@ struct MyApp: App {
             processQuickAction(userInfo: userInfo)
             shortcutItemToProcess = nil
             break
-        @unknown default:
-            break
+        @unknown default: break
         }
     }
     
-    func processQuickAction(userInfo: [String: NSSecureCoding]) {
+    private func processQuickAction(userInfo: [String: NSSecureCoding]) {
         do {
             // ToDo: sanitize addr and mac values
             let id = UUID(uuidString: userInfo["id"] as! String) ?? UUID()
@@ -55,7 +61,7 @@ struct MyApp: App {
             
         }
     }
-    func addQuickActions() {
+    private func addQuickActions() {
         var items: [UIApplicationShortcutItem] = []
         if let item = session.getShortcut(0) { items.append(item) }
         if let item = session.getShortcut(1) { items.append(item) }
@@ -65,6 +71,13 @@ struct MyApp: App {
             UIApplication.shared.shortcutItems = items
         } else {
             UIApplication.shared.shortcutItems = []
+        }
+    }
+    
+    static func getVersion() -> String {
+        if let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String { return appVersion
+        } else { 
+            return "0.?"
         }
     }
 }

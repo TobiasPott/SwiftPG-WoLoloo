@@ -2,6 +2,7 @@ import SwiftUI
 
 struct Persist {
     enum Keys: String {
+        case version = "wololoo_version"
         case bookmarks = "wololoo_bookmarks"
         case shortcuts = "wololoo_shortcuts"
         case volume = "wololoo_volume"
@@ -25,6 +26,22 @@ struct Persist {
     static func writeBool(key: Keys, value: Bool) {
         UserDefaults.standard.set(value, forKey: key.rawValue)
     }
+    
+    // = = = = = = = = = = =
+    // String type get/write
+    // = = = = = = = = = = =
+    static func getString(key: Keys, _ defaultValue: String) -> String {
+        if UserDefaults.standard.object(forKey: key.rawValue) != nil {
+            return UserDefaults.standard.string(forKey: key.rawValue) ?? defaultValue
+        } else { 
+            UserDefaults.standard.set(defaultValue, forKey: key.rawValue) 
+            return defaultValue 
+        }
+    }
+    static func writeString(key: Keys, value: String) {
+        UserDefaults.standard.set(value, forKey: key.rawValue)
+    }
+    
     
     // = = = = = = = = = = =
     // Int type get/write

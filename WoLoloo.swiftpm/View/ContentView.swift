@@ -4,11 +4,25 @@ struct ContentView: View {
     @Binding var target: WoLolooTarget
     @Binding var session: WoLolooSession
     
+    @Binding var hideSplashScreen: Bool
+    
     var body: some View {
-        NavigationStack(root: {
-            VStack() {
+        if !hideSplashScreen {
+            SplashScreen(onClose: {
+                self.hideSplashScreen.toggle()
+                Persist.writeBool(key: .splashscreen, value: self.hideSplashScreen)
+                
+                if let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String {
+                    Persist.writeString(key: .version, value: appVersion)
+                    
+                }
+            }).transition(.move(edge: .top))
+        }
+        else {
+            NavigationStack(root: {
                 let isValid = target.isValid
                 SessionAppToolbar(target: $target, session: $session)
+                    .navigationTitle("WoLoloo")
                 GroupBox(content: {
                     if session.isFromShortcut {
                         Text("Loaded Shortcut").foregroundStyle(Color.accentColor)
@@ -35,26 +49,16 @@ struct ContentView: View {
                     }                
                 })
                 if !session.reduced {
-                    VStack {
-                        ScrollView {
-                            WoLolooAudioView(target: $session.audio)
-                            BookmarksLink(target: $target, session: $session)
-                            GettingStartedLink()                        
-                            // ToDo: re-enable history when a proper display view is done (not really displaying any useful info atm)
-                            //                        HistoryView(session: $session)
-                        }
+                    ScrollView {
+                        WoLolooAudioView(target: $session.audio)
+                        BookmarksLink(target: $target, session: $session)
+                        GettingStartedLink()                        
                     }
                     .padding(.top).padding(.top)
-                } else { 
-                    Spacer()
-                }
-            }
-            .navigationTitle("WoLoloo")
-            
-        })
-        .padding(.horizontal)
-        .font(.system(size: 14, weight: .regular, design: .monospaced))
-        .frame(maxWidth: 440)
-        
+                } else { Spacer() }
+            })
+            .padding(.horizontal)
+            .font(.system(size: 14, weight: .regular, design: .monospaced))
+        }
     }
 }
