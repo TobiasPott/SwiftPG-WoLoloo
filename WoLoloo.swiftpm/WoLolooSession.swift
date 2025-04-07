@@ -1,52 +1,36 @@
 import SwiftUI
 
 struct WoLolooSession {
-    static let udk_bookmarks = "wololoo_bookmarks"
-    static let udk_shortcuts = "wololoo_shortcuts"
-    static let udk_volume = "wololoo_volume"
-    static let udk_muted = "wololoo_muted"
-    static let udk_reduced = "wololoo_reduced"
-    
     var history: [WoLolooTarget.Request] = []
     var bookmarks: [WoLolooTarget] = []
-    var scTargets: [WoLolooTarget?] = [nil, nil,nil, nil]
+    var shortcuts: [WoLolooTarget?] = [nil, nil,nil, nil]
     var audio: WoLolooAudio = WoLolooAudio()    
     var isFromShortcut: Bool = false
     
-    var reduced: Bool = true { didSet { UserDefaults.standard.set(self.reduced, forKey: WoLolooSession.udk_reduced) } }
+    var reduced: Bool = true { didSet { Persist.writeBool(key: .reduced, value: self.reduced) } }
     
     init() {
-        if UserDefaults.standard.object(forKey: WoLolooSession.udk_reduced) != nil {
-            self.reduced = UserDefaults.standard.bool(forKey: WoLolooSession.udk_reduced)
-        } else { UserDefaults.standard.set(self.reduced, forKey: WoLolooSession.udk_reduced) }
+        self.reduced = Persist.getBool(key: .reduced, self.reduced)
         self.isFromShortcut = false
     }
     
-    static let scItemType: String = "WoLoloo_DeviceTargetShortcut"
-    func shortcutItem(_ idx: Int) -> UIApplicationShortcutItem? {
-        if idx >= 0 && idx < scTargets.count {
-            if let target = scTargets[idx] { 
-                let scItem = UIMutableApplicationShortcutItem(type: WoLolooSession.scItemType, localizedTitle: "Empty")
-                scItem.type = WoLolooSession.scItemType // (REQUIRED)
-                scItem.localizedTitle = "Wake up '\(target.name)'" // (REQUIRED
-                scItem.icon = UIApplicationShortcutIcon(type: .bookmark) // icon of shortcut
-                var calluserInfo: [String: NSSecureCoding] {
-                    return ["name" : "\(target.name)" as NSSecureCoding,
-                            "addr": "\(target.addr)" as NSSecureCoding, 
-                            "mac": "\(target.mac)" as NSSecureCoding, 
-                            "port": "\(target.port)" as NSSecureCoding]
-                }
-                scItem.userInfo = calluserInfo
-                return scItem
-            } 
-        }
+    func getShortcut(_ idx: Int) -> UIApplicationShortcutItem? {
+        let shortcutItemType: String = "WoLoloo_DeviceTargetShortcut"
+        
+        if idx < 0 && idx >= shortcuts.count { return nil }
+        if let target = shortcuts[idx] { 
+            let scItem = UIMutableApplicationShortcutItem(type: shortcutItemType, localizedTitle: "Wake up '\(target.name)'")
+            scItem.icon = UIApplicationShortcutIcon(type: .message) // icon of shortcut
+            scItem.userInfo = target.userInfo
+            return scItem
+        } 
         return nil
     }
     
     
     func isBookmarked(_ target: WoLolooTarget) -> Bool {
         return self.bookmarks.contains(where: { bm in
-            return bm == target
+            return bm.id == target.id
         })
     }
     mutating func wololoo(_ target: WoLolooTarget) {
@@ -57,15 +41,24 @@ struct WoLolooSession {
     }
     mutating func bookmark(_ target: WoLolooTarget) {  
         if isBookmarked(target) {
-            print("Already bookmarked")
-            self.bookmarks.removeAll { bm in bm.id == target.id }
+            //            print("Already bookmarked")
+        } else {
+            var newBookmark = target
+            newBookmark.createdAt = .now
+            self.bookmarks.append(newBookmark)
         }
-        var newBookmark = target
-        newBookmark.createdAt = .now
-        self.bookmarks.append(newBookmark)
-        self.storeBookmarksAndShortcuts()
+        _ = Persist.writeJSON(key: .bookmarks, self.bookmarks)
         self.isFromShortcut = false
-//        print(target)
-//        print(newBookmark)
+    }
+}
+
+extension WoLolooSession {
+    //    func storeBookmarksAndShortcuts() {
+    //        _ = Persist.writeJSON(key: .bookmarks, self.bookmarks)
+    //        _ = Persist.writeJSON(key: .shortcuts, self.shortcuts)
+    //    }
+    mutating func loadBookmarksAndShortcuts() {
+        self.bookmarks = Persist.getJSON(key: .bookmarks, [])
+        self.shortcuts = Persist.getJSON(key: .shortcuts, [nil, nil, nil, nil])
     }
 }

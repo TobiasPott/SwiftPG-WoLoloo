@@ -8,7 +8,7 @@ struct BookmarksLink: View {
     var body: some View {
         if reduced {
             NavigationLink(destination: {
-                BookmarksView(target: $target, session: $session)                
+                BookmarksView(target: $target, session: $session)
             }, label: {
                 Image(systemName: "list.bullet.rectangle")
                     .resizable().aspectRatio(contentMode: .fit)
@@ -38,9 +38,8 @@ struct BookmarksView: View {
     var body: some View {
         GroupBox(content: {
             HStack {
-                
                 Button("Create Device Target") {
-                    target = WoLolooTarget()
+                    target = WoLolooTarget(name: "New Device")
                     session.bookmark(target)
                 }
             }.frame(maxWidth: .infinity, alignment: .leading)
@@ -53,15 +52,13 @@ struct BookmarksView: View {
                     }, label: { 
                         WoLoloTargetView(target: bm, isBookmarked: true)
                             .padding(.horizontal, -16)
-//                            .padding(.vertical, -8)
                             .contextMenu {
                                 BookmarkContextMenu(bookmark: bm, target: $target, session: $session)
                             }
                     })
                 }.onDelete(perform: { indexSet in 
                     session.bookmarks.remove(atOffsets: indexSet)
-                    // store changed session to UserDefaults
-                    session.storeBookmarksAndShortcuts()
+                    _ = Persist.writeJSON(key: .bookmarks, session.bookmarks)
                 })
                 
             }

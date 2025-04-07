@@ -16,10 +16,10 @@ struct ContentView: View {
                     // ToDo: Consider changing target to reference type
                     //    saving/updating into the list is a struggle
                     //        possibly use the id of the target and a direct access to the bookmarks list?! (as a bound variable)
-                    WoLoloTargetControl(target: $target, isBookmarked: !session.isBookmarked(target))
-//                        .onChange(of: target, {
-//                            print(target)  
-//                        })
+                    let bindTarget = $session.bookmarks.first { bm in
+                        return bm.id == target.id
+                    } ?? $target
+                    WoLoloTargetControl(target: bindTarget, isBookmarked: !session.isBookmarked(target))
                 })
                 GroupBox(content: {
                     ShortCutView(target: target, session: $session)                                .disabled(!isValid)

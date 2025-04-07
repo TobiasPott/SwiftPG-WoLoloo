@@ -10,12 +10,12 @@ struct ShortCutTargetButton: View {
     var offVariant: String = ".square"
     
     var body: some View {
-        let isSC = session.scTargets[idx] == nil ? false : (target == session.scTargets[idx]!)
+        let isSC = session.shortcuts[idx] == nil ? false : (target == session.shortcuts[idx]!)
         Button("", systemImage: baseImage + (isSC ? onVariant : offVariant), 
                action: {
-            if isSC { session.scTargets[idx] = nil } 
-            else { session.scTargets[idx] = target } 
-            session.storeBookmarksAndShortcuts()
+            if isSC { session.shortcuts[idx] = nil } 
+            else { session.shortcuts[idx] = target } 
+            _ = Persist.writeJSON(key: .shortcuts, session.shortcuts)
         })
     }
 }

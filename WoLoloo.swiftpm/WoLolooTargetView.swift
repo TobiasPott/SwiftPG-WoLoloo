@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct WoLoloTargetControl: View {
-    // ToDo: Consider consolidation of trget control and view with an 'edit' flag (or overload init where binding makes it edit and not binding makes it view (would be cool to check)
+    // ToDo: Consider consolidation of target control and view with an 'edit' flag (or overload init where binding makes it edit and not binding makes it view (would be cool to check)
     @Binding var target: WoLolooTarget
     let isBookmarked: Bool
     
@@ -14,19 +14,19 @@ struct WoLoloTargetControl: View {
             })
             PropertyGridRow(title: "Broadcast", content: {
                 TextField("Broadcast IP/Host Name", text: $target.addr)
-                ImageIf(set: !target.isValidAddr)
+                ImageIf(set: !target.isValidAddr, category: .warn)
             })
             PropertyGridRow(title: "MAC", content: {
                 TextField("Wake-On-Lan MAC Address", text: $target.mac)
                     .onChange(of: target.mac, {
                         target.mac = target.mac.replacingOccurrences(of: "-", with: ":")
                     })
-                ImageIf(set: !target.isValidMac)
+                ImageIf(set: !target.isValidMac, category: .warn)
             })
             // ToDo: check bug in changing port value (resets to default of 9)
             PropertyGridRow(title: "Port", content: {
                 TextField("Port (default = 9)", value: $target.port, formatter: NumberFormatter())
-                ImageIf(set: target.port != 9, image: "exclamationmark.circle")
+                ImageIf(set: target.port != 9, category: .warn)
             })
             
             PropertyGridRow(title: "Created", content: {
@@ -54,15 +54,15 @@ struct WoLoloTargetView: View {
                 Group {
                     PropertyGridRow(title: "Broadcast", content: {
                         Text("\(target.addr)")
-                        ImageIf(set: !target.isValidAddr)
+                        ImageIf(set: !target.isValidAddr, category: .warn)
                     })
                     PropertyGridRow(title: "MAC", content: {
                         Text("\(target.mac)")
-                        ImageIf(set: !target.isValidMac)
+                        ImageIf(set: !target.isValidMac, category: .warn)
                     })
                     PropertyGridRow(title: "Port", content: {
                         Text("\(target.port)") 
-                        ImageIf(set: target.port != 9)
+                        ImageIf(set: target.port != 9, category: .warn)
                     })
                     PropertyGridRow(title: "Created", content: {
                         let createdAtStr = target.createdAt.formatted(date: .abbreviated, time: .shortened)

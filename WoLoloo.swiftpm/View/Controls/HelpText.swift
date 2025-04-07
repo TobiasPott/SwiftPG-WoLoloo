@@ -1,7 +1,7 @@
 import SwiftUI
 
 public enum HelpEntry: Int {
-    case none, name, broadcast, mac, port, created, new, save, wololoo, bookmarks, volume, help, about, sourceCode
+    case none, name, broadcast, mac, port, created, shortcut, new_obsolete, save, wololoo, bookmarks, volume, help, about, sourceCode
 }
 struct HelpText: Identifiable {
     public let id: HelpEntry
@@ -28,7 +28,8 @@ struct Help {
         .init(id: .mac, title: "MAC", content: "Wake-On-Lan requires your device's MAC address. You can find them in your device's network adapter settings. It is usually formatted like '01-23-45-67-89-0A' or '01:23:45:67:89:0A'. \nWoLoloo expects colon separation but will convert hyphens you may enter. \n\nTry 'ipconfig' in a Windows command line or 'ifconfig' on Linux or Mac systems. \n\nYou may need to configure your device's network and BIOS settings to allow Wake-On-LAN, check the internet for some guides on your specific device."),
         .init(id: .port, title: "Port", content: "The network port used to send the magic packet to. It defaults to 9 and is configurable in case you have other requirements."),
         .init(id: .created, title: "Created At", content: "The date and time the WoLoloo device target was created. This value cannot be edited and is set upon bookmarking. \nIt is currently not in use but may be used in future features."),
-        .init(id: .new, title: "New", content: "Clears the configuration and allows you to create a new device target."),
+        .init(id: .shortcut, title: "Shortcut", content: "Shortcuts allows you to set four of your devices to be available from your devices homesceen. Long-press the 'WoLoloo' app icon to wake up the shortcut devices from the quick actions.\n\nYou need to specify 'Broadcast' and 'MAC' to use a device in a shortcut."),
+        .init(id: .new_obsolete, title: "New", content: "Clears the configuration and allows you to create a new device target."),
         .init(id: .save, title: "Save", content: "Saves the current configuration as a device target into your bookmarks. Save a configuration if you need it the next time you open this app."),
         .init(id: .wololoo, title: "WoLoloo", content: "This is when the magic happens. WoLoloo will send a magic package for the displayed configuration to wake up the device over the network. \nThe name WoLoloo is a silly reference, I like a bit too much, to a game unit in Age of Empires 2, which yells out 'WoLoloo', maybe some will remember."),
         .init(id: .bookmarks, title: "Bookmarks", content: "Your list of bookmarked device targets. This list is saved as your user data and will be present next time you start up the app. \nPlease note, you can save your configurations to avoid re-entering all values. I want WoLoloo to store as little data as possible but allow me to make my life a wee bit easier. \n\nIf you need more management options, please look for Mocha WOL, WoloW and others."),

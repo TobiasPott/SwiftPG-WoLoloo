@@ -6,24 +6,14 @@ struct MyApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     
     @State var target: WoLolooTarget = WoLolooTarget()
-    //    @State var debugTarget: WoLolooTarget? = nil
     @State var session: WoLolooSession = WoLolooSession()
     
     var body: some Scene {
         WindowGroup {
-            
             ContentView(target: $target, session: $session)
                 .onAppear(perform: {
                     session.loadBookmarksAndShortcuts()
                 })
-            //            if let qaTarget = debugTarget {
-            //                GroupBox(content: {
-            //                    Text("QuickAction: \(qaTarget.name)")
-            //                    Text("\t\t: \(qaTarget.addr)")
-            //                    Text("\t\t: \(qaTarget.mac)")
-            //                    Text("\t\t: \(qaTarget.port)")
-            //                })
-            //            }
         }.onChange(of: scenePhase) { _, newPhase in
             onScenePhaseChanged(newPhase)
         }
@@ -38,8 +28,6 @@ struct MyApp: App {
         case .active:
             session.loadBookmarksAndShortcuts()
             guard let userInfo = shortcutItemToProcess?.userInfo! else {
-                // reset debug target if not from shortcut
-                //                debugTarget = nil
                 session.isFromShortcut = false
                 return 
             }
@@ -53,29 +41,28 @@ struct MyApp: App {
     
     func processQuickAction(userInfo: [String: NSSecureCoding]) {
         do {
-            var qaTarget = WoLolooTarget()
             // ToDo: sanitize addr and mac values
-            qaTarget.name = userInfo["name"] as! String
-            qaTarget.addr = userInfo["addr"] as! String
-            qaTarget.mac = userInfo["mac"] as! String
-            qaTarget.port = try UInt16(userInfo["port"] as! String, format: .number)
-            // ToDo: Remove debug variable
-            //            debugTarget = qaTarget
+            let id = UUID(uuidString: userInfo["id"] as! String) ?? UUID()
+            let name = userInfo["name"] as! String
+            let addr = userInfo["addr"] as! String
+            let mac = userInfo["mac"] as! String
+            let port = try UInt16(userInfo["port"] as! String, format: .number)
+            
+            target = WoLolooTarget(id: id, name: name, addr: addr, mac: mac, port: port)
             session.isFromShortcut = true
-            target = qaTarget
-            session.wololoo(qaTarget)
+            session.wololoo(target)
         } catch {
             
         }
     }
     func addQuickActions() {
-        var shortcutItems: [UIApplicationShortcutItem] = []
-        if let scItem = session.shortcutItem(0) { shortcutItems.append(scItem) }
-        if let scItem = session.shortcutItem(1) { shortcutItems.append(scItem) }
-        if let scItem = session.shortcutItem(2) { shortcutItems.append(scItem) }
-        if let scItem = session.shortcutItem(3) { shortcutItems.append(scItem) }
-        if shortcutItems.count > 0 {
-            UIApplication.shared.shortcutItems = shortcutItems
+        var items: [UIApplicationShortcutItem] = []
+        if let item = session.getShortcut(0) { items.append(item) }
+        if let item = session.getShortcut(1) { items.append(item) }
+        if let item = session.getShortcut(2) { items.append(item) }
+        if let item = session.getShortcut(3) { items.append(item) }
+        if items.count > 0 {
+            UIApplication.shared.shortcutItems = items
         } else {
             UIApplication.shared.shortcutItems = []
         }

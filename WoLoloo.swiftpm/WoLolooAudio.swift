@@ -7,13 +7,8 @@ struct WoLolooAudio {
     private var isMuted: Bool = false
     
     init() {
-        
-        if UserDefaults.standard.object(forKey: WoLolooSession.udk_volume) != nil {
-            self.volume = UserDefaults.standard.float(forKey: WoLolooSession.udk_volume)   
-        }
-        if UserDefaults.standard.object(forKey: WoLolooSession.udk_muted) != nil {
-            self.isMuted = UserDefaults.standard.bool(forKey: WoLolooSession.udk_muted)   
-        }
+        self.volume = Persist.getFloat(key: .volume, 0.25)
+        self.isMuted = Persist.getBool(key: .muted, false)
         
         if let sound = Bundle.main.path(forResource: "WoLoloo-Call-PhoneFx", ofType: "m4a") {
             do {
@@ -30,11 +25,11 @@ struct WoLolooAudio {
     
     mutating func setIsMuted(_ newIsMuted: Bool) {
         self.isMuted = newIsMuted
-        UserDefaults.standard.set(newIsMuted, forKey: WoLolooSession.udk_muted)
+        Persist.writeBool(key: .muted, value: newIsMuted)
     }
     mutating func setVolume(_ newVolume: Float) {
         self.volume = newVolume.clamped(to: 0...1.0)
-        UserDefaults.standard.set(newVolume, forKey: WoLolooSession.udk_volume)
+        Persist.writeFloat(key: .volume, value: newVolume)
         self.player?.volume = isMuted ? 0.0 : self.volume
     }
     func play() {

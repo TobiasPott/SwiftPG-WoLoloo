@@ -4,16 +4,11 @@ struct WoLolooTarget: Identifiable, Codable, Equatable {
     static func ==(lhs: WoLolooTarget, rhs: WoLolooTarget) -> Bool {
         return lhs.id == rhs.id && lhs.name == rhs.name && lhs.addr == rhs.addr && lhs.mac == rhs.mac && lhs.port == rhs.port
     }
-//    static func ==(lhs: WoLolooTarget, rhs: WoLolooTarget) -> Bool {
-//        return (lhs.name == rhs.name && lhs.addr == rhs.addr
-//                && lhs.mac == rhs.mac && lhs.port == rhs.port) // || lhs.id == rhs.id
-//    }
     
     public var id: UUID = UUID()
-    //    public var id: String? { get { return name } set { name = newValue ?? "Unnamed Device" } }
-    var name: String = "YourDevice #1"
-    var addr: String = "" //"192.168.178.*"
-    var mac: String = "" // "58:47:ca:7b:aa:5a"
+    var name: String = "Device #1"
+    var addr: String = "192.168.178.*"
+    var mac: String = "58:47:ca:7b:aa:5a"
     var port: UInt16 = 9
     var createdAt: Date = .now
     
@@ -23,13 +18,26 @@ struct WoLolooTarget: Identifiable, Codable, Equatable {
         return Awake.Device(MAC: devMac, BroadcastAddr: devAddr, 
                             Port: port)
     }}
+    var userInfo: [String: NSSecureCoding] { get {
+        return ["id": "\(self.id)" as NSSecureCoding,
+                "name" : "\(self.name)" as NSSecureCoding,
+                "addr": "\(self.addr)" as NSSecureCoding, 
+                "mac": "\(self.mac)" as NSSecureCoding, 
+                "port": "\(self.port)" as NSSecureCoding]
+    } }
     
-    init(name: String = "Device Target #1", addr: String = "", mac: String = "", port: UInt16 = 9) {
+    
+    init(name: String = "Unsaved #1", addr: String = "", mac: String = "", port: UInt16 = 9) {
+        self.init(id: UUID(), name: name, addr: addr, mac: mac, port: port)
+    }
+    internal init(id: UUID, name: String = "Unsaved #1", addr: String = "", mac: String = "", port: UInt16 = 9) {
+        self.id = id
         self.name = name
         self.addr = addr
-        self.mac = mac
+        self.mac = mac.replacingOccurrences(of: "-", with: ":")
         self.port = port
     }
+    
     
     func duplicate() -> Self {
         return .init(name: "\(self.name) (copy)", addr: self.addr, mac: self.mac, port: self.port)    
