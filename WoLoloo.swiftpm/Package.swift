@@ -18,8 +18,8 @@ let package = Package(
             targets: ["AppModule"],
             bundleIdentifier: "de.tobiaspott.playground.wololoo",
             teamIdentifier: "LR2W97LX43",
-            displayVersion: "0.7",
-            bundleVersion: "55",
+            displayVersion: "0.8",
+            bundleVersion: "56",
             appIcon: .asset("AppIcon"),
             accentColor: .presetColor(.blue),
             supportedDeviceFamilies: [

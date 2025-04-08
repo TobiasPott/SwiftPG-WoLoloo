@@ -14,7 +14,6 @@ struct ContentView: View {
                 
                 if let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String {
                     Persist.writeString(key: .version, value: appVersion)
-                    
                 }
             }).transition(.move(edge: .top))
         }
@@ -25,18 +24,17 @@ struct ContentView: View {
                     .navigationTitle("WoLoloo")
                 GroupBox(content: {
                     if session.isFromShortcut {
-                        Text("Loaded Shortcut").foregroundStyle(Color.accentColor)
+                        Text("Loaded Shortcut")
+                            .foregroundStyle(Color.accentColor)
                     }
-                    // ToDo: Consider changing target to reference type
-                    //    saving/updating into the list is a struggle
-                    //        possibly use the id of the target and a direct access to the bookmarks list?! (as a bound variable)
                     let bindTarget = $session.bookmarks.first { bm in
                         return bm.id == target.id
                     } ?? $target
                     WoLoloTargetControl(target: bindTarget, isBookmarked: !session.isBookmarked(target))
                 })
                 GroupBox(content: {
-                    ShortCutView(target: target, session: $session)                                .disabled(!isValid)
+                    ShortCutView(target: target, session: $session)
+                        .disabled(!isValid)
                 })
                 GroupBox(content: {
                     Grid {
@@ -56,6 +54,9 @@ struct ContentView: View {
                     }
                     .padding(.top).padding(.top)
                 } else { Spacer() }
+                
+                SourceCodeLink(reduced: session.reduced)
+                    .padding(.bottom)
             })
             .padding(.horizontal)
             .font(.system(size: 14, weight: .regular, design: .monospaced))

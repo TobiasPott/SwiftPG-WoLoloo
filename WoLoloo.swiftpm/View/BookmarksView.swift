@@ -1,5 +1,17 @@
 import SwiftUI
 
+struct BookmarksLinkIcon: View {
+    var body: some View {
+        Image(systemName: "list.bullet.rectangle")
+            .resizable().aspectRatio(contentMode: .fit)
+            .frame(width: 23)
+            .overlay(content: {
+                Image(systemName: "bookmark.fill")
+                    .offset(CGSize(width: 10.0, height: 6.0))
+            })
+    }
+}
+
 struct BookmarksLink: View {
     @Binding var target: WoLolooTarget
     @Binding var session: WoLolooSession
@@ -10,19 +22,16 @@ struct BookmarksLink: View {
             NavigationLink(destination: {
                 BookmarksView(target: $target, session: $session)
             }, label: {
-                Image(systemName: "list.bullet.rectangle")
-                    .resizable().aspectRatio(contentMode: .fit)
-                    .frame(width: 23)
-                    .overlay(content: {
-                        Image(systemName: "bookmark.fill")
-                            .offset(CGSize(width: 10.0, height: 6.0))
-                    })
+                BookmarksLinkIcon()
             })
         } else {
             GroupBox(content: {
                 NavigationLink(destination: {
                     BookmarksView(target: $target, session: $session)
-                }, label: { Text("Bookmarks (\(session.bookmarks.count))") })
+                }, label: { 
+                    BookmarksLinkIcon().padding(.trailing)
+                    Text("Bookmarks (\(session.bookmarks.count))") 
+                })
                 .frame(maxWidth: .infinity)
             })
         }
