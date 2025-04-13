@@ -29,7 +29,6 @@ struct SplashScreen: View {
                 .padding(.vertical, 32)
                 .background(.black.opacity(0.25))
                 
-                
                 ScrollView(content: {
                     VStack(alignment: .leading, spacing: 10) {
                         Text("Prerequisites")
@@ -51,6 +50,7 @@ struct SplashScreen: View {
                 }).frame(maxWidth: .infinity, maxHeight: 300)
                     .padding()
                     .background(.black.opacity(0.25))
+
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
         })
